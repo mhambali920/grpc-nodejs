@@ -33,7 +33,7 @@ server.addService(usersProto.UserService.service, {
     getUser: async (call, callback) => {
         let user = await Prisma.user.findUnique({
             where: {
-                id: Number(call.request.id),
+                id: call.request.id,
             },
         });
         if (user) {
@@ -59,7 +59,7 @@ server.addService(usersProto.UserService.service, {
     updateUser: async (call, callback) => {
         const user = await Prisma.user.update({
             where: {
-                id: Number(call.request.id),
+                id: call.request.id,
             },
             data: {
                 name: call.request.name,
@@ -78,7 +78,7 @@ server.addService(usersProto.UserService.service, {
     deleteUser: async (call, callback) => {
         const deleteUser = await Prisma.user.delete({
             where: {
-                id: Number(call.request.id),
+                id: call.request.id,
             },
         });
         // console.log(deleteUser);
