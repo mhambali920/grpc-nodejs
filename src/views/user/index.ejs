@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Crud gRPC with Express</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <header>
+            <a href="/" class="header-logo">Crud gRPC with Express</a>
+        </header>
+        <div class="container">
+            <div class="container-header">
+                <h1>User List</h1>
+                <a href="/user/new" class="new-button">+ Tambahkan</a>
+            </div>
+            <div class="index-table-wrapper">
+                <% if(users) { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>ID</td>
+                            <td>NAME</td>
+                            <td>EMAIL</td>
+                            <td>ACTION</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach((item) => { %>
+                        <tr class="table-body">
+                            <td><%= item.id %></td>
+                            <td><%= item.name %></td>
+                            <td><%= item.email %></td>
+                            <td class="item-menu">
+                                <form action="/user/delete/<%= item.id %>" method="post">
+                                    <input type="submit" value="Hapus" />
+                                </form>
+                                <a href="/user/edit/<%= item.id %>">Edit</a>
+                                <a href="/user/<%= item.id %>">Show</a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <div>Belum ada data, silakan tambahkan terlebih dahulu</div>
+                <% } %>
+            </div>
+        </div>
+    </body>
+</html>

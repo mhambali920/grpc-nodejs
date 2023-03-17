@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Crud gRPC with Express</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <header>
+            <a href="/" class="header-logo">Crud gRPC with Express</a>
+        </header>
+        <div class="container">
+            <div class="container-header">
+                <h1>Edit User</h1>
+            </div>
+            <div class="item-form-wrapper">
+                <form action="/user/update/<%= id %>" method="post">
+                    <input type="hidden" name="id" value="<%= id %>" />
+                    <input type="text" name="name" placeholder="name" value="<%= name %>" />
+                    <input type="email" name="email" placeholder="email" value="<%= email %>" />
+                    <input type="submit" value="Update" />
+                </form>
+            </div>
+            <a href="/users" class="cancel-button">Kembali</a>
+        </div>
+    </body>
+</html>

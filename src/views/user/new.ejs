@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Crud gRPC with Express</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <header>
+            <a href="/" class="header-logo">Crud gRPC with Express</a>
+        </header>
+        <div class="container">
+            <div class="container-header">
+                <h1>Add New User</h1>
+            </div>
+            <div class="item-form-wrapper">
+                <p class="form-label">Masukan nama dan email</p>
+                <form action="/user/create" method="post">
+                    <input type="text" name="name" placeholder="name" />
+                    <input type="email" name="email" placeholder="email" />
+                    <input type="submit" value="Tambahkan" />
+                </form>
+            </div>
+            <a href="/users" class="cancel-button">Kembali</a>
+        </div>
+    </body>
+</html>
