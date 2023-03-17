@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const Prisma = new PrismaClient();
-const PROTO_PATH_CUSTOMER = "./src/proto/customer.proto";
+const PROTO_PATH_POST = "./src/proto/post.proto";
 const PROTO_PATH_USER = "./src/proto/user.proto";
 
 const grpc = require("@grpc/grpc-js");
@@ -12,17 +12,15 @@ let options = {
     enums: String,
     arrays: true,
 };
-const customerProtoDefinition = protoLoader.loadSync(PROTO_PATH_CUSTOMER, options);
+const postProtoDefinition = protoLoader.loadSync(PROTO_PATH_POST, options);
 const userProtoDefinition = protoLoader.loadSync(PROTO_PATH_USER, options);
 
-const customersProto = grpc.loadPackageDefinition(customerProtoDefinition);
+const postsProto = grpc.loadPackageDefinition(postProtoDefinition);
 const usersProto = grpc.loadPackageDefinition(userProtoDefinition);
-
-const { v4: uuidv4 } = require("uuid");
 
 const server = new grpc.Server();
 
-// UserService pada kode di bawah harus ada dalam file user.proto
+// UserService pada kode di bawah harus ada dalam file user.proto begitu pula dengan method method nya
 // rpc MethodName (Request) returns (Response);
 // getUsers: (param1,param2) => { param1 untuk menerima request, param2 callback response }
 server.addService(usersProto.UserService.service, {
@@ -88,6 +86,78 @@ server.addService(usersProto.UserService.service, {
             callback({
                 code: grpc.status.NOT_FOUND,
                 details: "User Tak Ketemu",
+            });
+        }
+    },
+});
+server.addService(postsProto.PostService.service, {
+    getPosts: async (_, callback) => {
+        let posts = await Prisma.post.findMany();
+        callback(null, { posts });
+    },
+    getPost: async (call, callback) => {
+        let post = await Prisma.post.findUnique({
+            where: {
+                id: call.request.id,
+            },
+        });
+        if (post) {
+            callback(null, post);
+        } else {
+            callback({
+                code: grpc.status.NOT_FOUND,
+                details: "post Tak Ketemu",
+            });
+        }
+    },
+    addPost: async (call, callback) => {
+        let post = await Prisma.post.create({
+            data: {
+                title: call.request.title,
+                content: call.request.content,
+                published: call.request.published,
+                authorId: call.request.authorId,
+                updatedAt: call.request.updatedAt,
+            },
+        });
+        if (post) {
+            callback(null, post);
+        }
+    },
+    updatePost: async (call, callback) => {
+        const post = await Prisma.post.update({
+            where: {
+                id: call.request.id,
+            },
+            data: {
+                title: call.request.title,
+                content: call.request.content,
+                published: call.request.published,
+                authorId: call.request.authorId,
+                updatedAt: call.request.updatedAt,
+            },
+        });
+        if (post) {
+            callback(null, post);
+        } else {
+            callback({
+                code: grpc.status.NOT_FOUND,
+                details: "post Tak Ketemu",
+            });
+        }
+    },
+    deletePost: async (call, callback) => {
+        const deletepost = await Prisma.post.delete({
+            where: {
+                id: call.request.id,
+            },
+        });
+        if (deletepost) {
+            callback(null, {});
+        } else {
+            callback({
+                code: grpc.status.NOT_FOUND,
+                details: "post Tak Ketemu",
             });
         }
     },
