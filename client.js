@@ -1,5 +1,6 @@
-const PROTO_PATH_CUSTOMER = "./customer.proto";
-const PROTO_PATH_USERR = "./user.proto";
+// file ini telah di refactor ke ./src/client.jd
+const PROTO_PATH_CUSTOMER = "./src/proto/customer.proto";
+const PROTO_PATH_USER = "./src/proto/user.proto";
 
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
@@ -11,7 +12,7 @@ let options = {
     arrays: true,
 };
 const customerProtoDefinition = protoLoader.loadSync(PROTO_PATH_CUSTOMER, options);
-const userProtoDefinition = protoLoader.loadSync(PROTO_PATH_USERR, options);
+const userProtoDefinition = protoLoader.loadSync(PROTO_PATH_USER, options);
 
 const CustomerService = grpc.loadPackageDefinition(customerProtoDefinition).CustomerService;
 const UserService = grpc.loadPackageDefinition(userProtoDefinition).UserService;
@@ -21,17 +22,17 @@ const userClient = new UserService("127.0.0.1:50051", grpc.credentials.createIns
 // module.exports = client;
 
 // testting
-customerClient.getAll({}, (error, response) => {
-    if (error) throw error;
-    console.log(response);
-});
+// userClient.getUsers({}, (error, response) => {
+//     if (error) throw error;
+//     console.log(response);
+// });
 
-userClient.getUsers({}, (error, response) => {
-    if (error) throw error;
-    console.log(response);
-});
+// userClient.getUser({ id: 2 }, (error, response) => {
+//     if (error) throw error;
+//     console.log(response);
+// });
 
-userClient.getUser({ id: 5 }, (error, response) => {
-    if (error) throw error;
-    console.log(response);
-});
+// userClient.addUser({ name: "John Doe", email: "jhondoe@mail.com" }, (err, resp) => {
+//     if (err) throw err;
+//     console.log(resp);
+// });

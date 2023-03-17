@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const Prisma = new PrismaClient();
-const PROTO_PATH_CUSTOMER = "./customer.proto";
-const PROTO_PATH_USER = "./user.proto";
+const PROTO_PATH_CUSTOMER = "./src/proto/customer.proto";
+const PROTO_PATH_USER = "./src/proto/user.proto";
 
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
@@ -45,75 +45,49 @@ server.addService(usersProto.UserService.service, {
             });
         }
     },
-});
-
-// customer service masih pake in memory array
-let customers = [
-    {
-        id: "a68b823c-7ca6-44bc-b721-fb4d5312cafc",
-        name: "John Bolton",
-        age: 23,
-        address: "Address 1",
+    addUser: async (call, callback) => {
+        let user = await Prisma.user.create({
+            data: {
+                name: call.request.name,
+                email: call.request.email,
+            },
+        });
+        if (user) {
+            callback(null, user);
+        }
     },
-    {
-        id: "34415c7c-f82d-4e44-88ca-ae2a1aaa92b7",
-        name: "Mary Anne",
-        age: 45,
-        address: "Address 2",
-    },
-];
-server.addService(customersProto.CustomerService.service, {
-    getAll: (_, callback) => {
-        callback(null, { customers });
-    },
-
-    get: (call, callback) => {
-        let customer = customers.find((n) => n.id == call.request.id);
-
-        if (customer) {
-            callback(null, customer);
+    updateUser: async (call, callback) => {
+        const user = await Prisma.user.update({
+            where: {
+                id: Number(call.request.id),
+            },
+            data: {
+                name: call.request.name,
+                email: call.request.email,
+            },
+        });
+        if (user) {
+            callback(null, user);
         } else {
             callback({
                 code: grpc.status.NOT_FOUND,
-                details: "Not found",
+                details: "User Tak Ketemu",
             });
         }
     },
-
-    insert: (call, callback) => {
-        let customer = call.request;
-
-        customer.id = uuidv4();
-        customers.push(customer);
-        callback(null, customer);
-    },
-
-    update: (call, callback) => {
-        let existingCustomer = customers.find((n) => n.id == call.request.id);
-
-        if (existingCustomer) {
-            existingCustomer.name = call.request.name;
-            existingCustomer.age = call.request.age;
-            existingCustomer.address = call.request.address;
-            callback(null, existingCustomer);
-        } else {
-            callback({
-                code: grpc.status.NOT_FOUND,
-                details: "Not found",
-            });
-        }
-    },
-
-    remove: (call, callback) => {
-        let existingCustomerIndex = customers.findIndex((n) => n.id == call.request.id);
-
-        if (existingCustomerIndex != -1) {
-            customers.splice(existingCustomerIndex, 1);
+    deleteUser: async (call, callback) => {
+        const deleteUser = await Prisma.user.delete({
+            where: {
+                id: Number(call.request.id),
+            },
+        });
+        // console.log(deleteUser);
+        if (deleteUser) {
             callback(null, {});
         } else {
             callback({
                 code: grpc.status.NOT_FOUND,
-                details: "Not found",
+                details: "User Tak Ketemu",
             });
         }
     },
